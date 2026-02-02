@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>An Invitation for Shweta</title>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -11,220 +11,319 @@
 
 <style>
 :root {
-  --rose:#e84c7f;
-  --rose-dark:#c93764;
-  --gold:#e7c37b;
-  --ink:#3b1e2b;
+  --rose: #e84c7f;
+  --rose-dark: #c93764;
+  --gold: #e7c37b;
+  --ink: #3b1e2b;
+  --glass: rgba(255,255,255,.68);
 }
 
-*{box-sizing:border-box}
+* { box-sizing: border-box; }
 
-body{
-  margin:0;
-  min-height:100vh;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,#fde0ea,#fff2f7);
-  font-family:Inter,sans-serif;
-  overflow:hidden;
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top, #fff7fb, transparent 60%),
+    linear-gradient(135deg, #fde0ea, #fff2f7);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  padding: 24px;
 }
 
-/* ---------- START OVERLAY ---------- */
-#startOverlay{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(135deg,#fde0ea,#fff2f7);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle, rgba(232,76,127,.12) 2px, transparent 2px);
+  background-size: 46px 46px;
+  animation: drift 20s linear infinite;
+  pointer-events: none;
 }
 
-.start-card{
-  background:rgba(255,255,255,.85);
-  backdrop-filter:blur(18px);
-  padding:48px 42px;
-  border-radius:28px;
-  text-align:center;
-  box-shadow:0 40px 80px rgba(0,0,0,.2);
+@keyframes drift {
+  from { background-position: 0 0; }
+  to   { background-position: 0 -500px; }
 }
 
-.start-card h1{
-  font-family:"Playfair Display",serif;
-  font-size:34px;
-  color:var(--ink);
-  margin-bottom:28px;
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
 }
 
-.start-card button{
-  padding:16px 40px;
-  border-radius:999px;
-  border:none;
-  font-size:17px;
-  font-weight:600;
-  background:linear-gradient(135deg,var(--rose),var(--rose-dark));
-  color:white;
-  cursor:pointer;
+.card {
+  position: relative;
+  width: min(760px, 94vw);
+  padding: 54px 44px 58px;
+  background: var(--glass);
+  backdrop-filter: blur(22px);
+  border-radius: 30px;
+  text-align: center;
+  box-shadow: 0 40px 90px rgba(0,0,0,.18);
+  z-index: 1;
 }
 
-/* ---------- MAIN CARD ---------- */
-.card{
-  width:min(760px,94vw);
-  padding:52px 44px 58px;
-  background:rgba(255,255,255,.7);
-  backdrop-filter:blur(22px);
-  border-radius:30px;
-  text-align:center;
-  box-shadow:0 40px 90px rgba(0,0,0,.18);
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 22px;
+  border: 1.5px solid rgba(231,195,123,.55);
+  pointer-events: none;
 }
 
-.subtitle{
-  font-size:13px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:#8c4c65;
+.subtitle {
+  font-size: 13px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #8c4c65;
+  margin-bottom: 18px;
 }
 
-.name{
-  font-family:"Playfair Display",serif;
-  font-size:50px;
-  margin:10px 0;
-  color:var(--ink);
+.name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(34px, 5vw, 54px);
+  color: var(--ink);
+  margin: 6px 0 10px;
+  overflow: hidden;
 }
 
-.question{
-  font-family:"Playfair Display",serif;
-  font-size:38px;
-  margin-bottom:30px;
+.name span {
+  display: inline-block;
+  animation: reveal 1.6s ease forwards;
 }
 
-.button-zone{
-  position:relative;
-  width:520px;
-  max-width:90%;
-  height:160px;
-  margin:0 auto;
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-button{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  padding:18px 36px;
-  border-radius:999px;
-  border:none;
-  cursor:pointer;
+.question {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 4.2vw, 44px);
+  color: var(--ink);
+  margin: 16px 0 26px;
 }
 
-#yesBtn{
-  left:18%;
-  background:linear-gradient(135deg,var(--rose),var(--rose-dark));
-  color:white;
+.divider {
+  width: 90px;
+  height: 2px;
+  margin: 0 auto 36px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
 
-#noBtn{
-  left:62%;
-  background:#eee;
+.button-zone {
+  position: relative;
+  width: min(520px, 92%);
+  height: 160px;
+  margin: 0 auto;
+  touch-action: none;
 }
 
-.result{
-  display:none;
-  margin-top:32px;
+button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 18px 36px;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 18px 40px rgba(0,0,0,.18);
+  transition: all .18s ease;
 }
 
-.result h2{
-  font-family:"Playfair Display",serif;
-  font-size:42px;
-  color:var(--rose-dark);
+#yesBtn {
+  left: 18%;
+  background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+  color: white;
 }
 
-.result img{
-  width:340px;
-  max-width:90%;
-  border-radius:18px;
+#yesBtn:hover {
+  transform: translateY(-50%) scale(1.07);
+  box-shadow: 0 24px 50px rgba(232,76,127,.45);
+}
+
+#noBtn {
+  left: 62%;
+  background: #f1f1f4;
+  color: #444;
+}
+
+.hint {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #7a4458;
+  opacity: .8;
+}
+
+.result {
+  display: none;
+  margin-top: 30px;
+  animation: pop .4s ease;
+}
+
+.result h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 4.5vw, 46px);
+  color: var(--rose-dark);
+  margin-bottom: 14px;
+}
+
+.result img {
+  width: min(360px, 90%);
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.25);
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: scale(1); }
 }
 </style>
 </head>
 
 <body>
 
-<!-- START OVERLAY -->
-<div id="startOverlay">
-  <div class="start-card">
-    <h1>Tap to open your invitation 💌</h1>
-    <button id="startBtn">Begin</button>
-  </div>
-</div>
+<canvas id="confettiCanvas"></canvas>
 
-<!-- AUDIO -->
-<audio id="bgMusic" loop src="https://cdn.pixabay.com/audio/2022/03/15/audio_9b7c3c9c21.mp3"></audio>
-<audio id="chaseMusic" loop src="https://cdn.pixabay.com/audio/2022/10/25/audio_946b8d4e47.mp3"></audio>
-<audio id="yesMusic" src="https://cdn.pixabay.com/audio/2022/03/10/audio_0c3f89c6b6.mp3"></audio>
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_9b7c3c9c21.mp3">
+</audio>
+
+<audio id="chaseMusic" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/10/25/audio_946b8d4e47.mp3">
+</audio>
+
+<audio id="yesMusic">
+  <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_0c3f89c6b6.mp3">
+</audio>
 
 <main class="card">
   <div class="subtitle">An invitation, just for</div>
-  <div class="name">Shweta</div>
+
+  <div class="name"><span>Shweta</span></div>
+
   <div class="question">Will you be my Valentine?</div>
+  <div class="divider"></div>
 
   <section class="button-zone" id="zone">
     <button id="yesBtn">Yes 💖</button>
     <button id="noBtn">No</button>
   </section>
 
+  <div class="hint" id="hint">Some invitations can’t be declined ✨</div>
+
   <section class="result" id="result">
     <h2>She said YES!! 💖🎉</h2>
-    <img src="https://www.reactiongifs.com/r/cheering_minions.gif">
+    <img src="https://www.reactiongifs.com/r/cheering_minions.gif" alt="Celebration">
   </section>
 </main>
 
 <script>
-const startBtn=document.getElementById("startBtn");
-const overlay=document.getElementById("startOverlay");
+const zone = document.getElementById("zone");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const result = document.getElementById("result");
+const hint = document.getElementById("hint");
+const confettiCanvas = document.getElementById("confettiCanvas");
 
-const bgMusic=document.getElementById("bgMusic");
-const chaseMusic=document.getElementById("chaseMusic");
-const yesMusic=document.getElementById("yesMusic");
+const bgMusic = document.getElementById("bgMusic");
+const chaseMusic = document.getElementById("chaseMusic");
+const yesMusic = document.getElementById("yesMusic");
 
-const zone=document.getElementById("zone");
-const noBtn=document.getElementById("noBtn");
-const yesBtn=document.getElementById("yesBtn");
-const result=document.getElementById("result");
+bgMusic.volume = 0.25;
+chaseMusic.volume = 0.35;
+yesMusic.volume = 0.5;
 
-bgMusic.volume=.25;
-chaseMusic.volume=.35;
-yesMusic.volume=.5;
+document.addEventListener("pointerdown", () => {
+  if (bgMusic.paused) bgMusic.play().catch(()=>{});
+}, { once: true });
 
-/* START */
-startBtn.onclick=()=>{
-  bgMusic.play();
-  overlay.remove();
-};
+function resizeCanvas() {
+  const dpr = Math.max(1, devicePixelRatio || 1);
+  confettiCanvas.width = innerWidth * dpr;
+  confettiCanvas.height = innerHeight * dpr;
+}
+resizeCanvas();
+addEventListener("resize", resizeCanvas);
 
-/* NO CHASE */
-zone.onpointermove=e=>{
-  const b=noBtn.getBoundingClientRect();
-  const d=Math.hypot(
-    (b.left+b.width/2)-e.clientX,
-    (b.top+b.height/2)-e.clientY
+const confettiInstance = confetti.create(confettiCanvas, { resize: false });
+
+function celebrate() {
+  const end = Date.now() + 2000;
+  (function frame() {
+    confettiInstance({
+      particleCount: 14,
+      spread: 100,
+      startVelocity: 45,
+      origin: { x: Math.random(), y: Math.random() * 0.4 }
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+}
+
+let yesScale = 1;
+function growYes() {
+  yesScale = Math.min(2.2, yesScale + 0.1);
+  yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+}
+
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function moveNo(x, y) {
+  if (chaseMusic.paused) chaseMusic.play().catch(()=>{});
+
+  const z = zone.getBoundingClientRect();
+  const b = noBtn.getBoundingClientRect();
+  let dx = (b.left + b.width/2) - x;
+  let dy = (b.top + b.height/2) - y;
+  let mag = Math.hypot(dx, dy) || 1;
+  dx /= mag; dy /= mag;
+
+  let left = (b.left - z.left) + dx * 140;
+  let top  = (b.top - z.top) + dy * 140;
+
+  noBtn.style.left = clamp(left, 0, z.width - b.width) + "px";
+  noBtn.style.top  = clamp(top, 0, z.height - b.height) + "px";
+  noBtn.style.transform = "none";
+  growYes();
+}
+
+zone.addEventListener("pointermove", e => {
+  const b = noBtn.getBoundingClientRect();
+  const d = Math.hypot(
+    (b.left + b.width/2) - e.clientX,
+    (b.top + b.height/2) - e.clientY
   );
 
-  if(d<140){
-    chaseMusic.play();
-    noBtn.style.left=Math.random()*300+"px";
-  }else{
+  if (d < 140) moveNo(e.clientX, e.clientY);
+  else {
     chaseMusic.pause();
-    chaseMusic.currentTime=0;
+    chaseMusic.currentTime = 0;
   }
-};
+});
 
-/* YES */
-yesBtn.onclick=()=>{
-  bgMusic.pause();
+yesBtn.addEventListener("click", () => {
+  zone.style.display = "none";
+  hint.style.display = "none";
+  result.style.display = "block";
+
   chaseMusic.pause();
-  yesMusic.play();
-  result.style.display="block";
-};
-</script>
+  bgMusic.pause();
+  yesMusic.play().catch(()=>{});
 
+  celebrate();
+});
+</script>
 </body>
 </html>

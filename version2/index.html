@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>An Invitation for Shweta</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --rose:#e84c7f;
+  --rose-dark:#c93764;
+  --gold:#e7c37b;
+  --ink:#3b1e2b;
+  --glass:rgba(255,255,255,.68);
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at top,#fff7fb,transparent 60%),
+    linear-gradient(135deg,#fde0ea,#fff2f7);
+  font-family:Inter,sans-serif;
+  overflow:hidden;
+  padding:24px;
+  position:relative;
+}
+
+/* Floating hearts */
+.heart {
+  position:absolute;
+  width:20px;
+  height:20px;
+  background:var(--rose);
+  transform: rotate(45deg);
+  opacity:0.8;
+  animation:float linear infinite;
+  pointer-events:none;
+  z-index:0;
+}
+
+.heart::before,
+.heart::after {
+  content:"";
+  position:absolute;
+  width:20px;
+  height:20px;
+  background:var(--rose);
+  border-radius:50%;
+}
+
+.heart::before {
+  top:-10px;
+  left:0;
+}
+
+.heart::after {
+  left:-10px;
+  top:0;
+}
+
+@keyframes float {
+  0% { transform: translateY(0) rotate(45deg); opacity:0.8; }
+  50%{ opacity:1; }
+  100% { transform: translateY(-120vh) rotate(45deg); opacity:0; }
+}
+
+#confettiCanvas{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:10;
+}
+
+.card{
+  width:min(760px,94vw);
+  padding:54px 44px 58px;
+  background:var(--glass);
+  backdrop-filter:blur(22px);
+  border-radius:30px;
+  text-align:center;
+  box-shadow:0 40px 90px rgba(0,0,0,.18);
+  position:relative;
+  z-index:1;
+}
+
+.subtitle{
+  font-size:13px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#8c4c65;
+}
+
+.name{
+  font-family:"Playfair Display",serif;
+  font-size:clamp(34px,5vw,54px);
+  margin:8px 0;
+}
+
+.question{
+  font-family:"Playfair Display",serif;
+  font-size:clamp(26px,4vw,44px);
+  margin:22px 0 30px;
+}
+
+.button-zone{
+  position:relative;
+  width:min(520px,92%);
+  height:160px;
+  margin:0 auto;
+}
+
+button{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  padding:18px 36px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-size:17px;
+  font-weight:600;
+  transition:all .25s ease;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);
+  z-index:2;
+}
+
+#yesBtn{
+  left:10%;
+  background:linear-gradient(135deg,var(--rose),var(--rose-dark));
+  color:white;
+}
+
+#noBtn{
+  right:10%;
+  background:#eee;
+}
+
+.result{
+  display:none;
+  margin-top:32px;
+}
+
+.result h2{
+  font-family:"Playfair Display",serif;
+  font-size:clamp(30px,4.5vw,46px);
+  color:var(--rose-dark);
+}
+
+.result img{
+  width:min(360px,90%);
+  border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<!-- MUSIC -->
+<audio id="bgMusic" loop src="https://cdn.pixabay.com/audio/2022/03/15/audio_9b7c3c9c21.mp3"></audio>
+<audio id="noMusic" src="https://cdn.pixabay.com/audio/2022/10/25/audio_946b8d4e47.mp3"></audio>
+<audio id="yesMusic" src="https://cdn.pixabay.com/audio/2022/03/10/audio_0c3f89c6b6.mp3"></audio>
+
+<main class="card">
+  <div class="subtitle">An invitation, just for</div>
+  <div class="name">Shweta</div>
+
+  <div class="question" id="question">Will you be my Valentine?</div>
+
+  <section class="button-zone">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No</button>
+  </section>
+
+  <section class="result" id="result">
+    <h2>She said YES!! 💖🎉</h2>
+    <img src="https://www.reactiongifs.com/r/cheering_minions.gif" alt="Celebration">
+  </section>
+</main>
+
+<script>
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const question=document.getElementById("question");
+const result=document.getElementById("result");
+
+const bgMusic=document.getElementById("bgMusic");
+const noMusic=document.getElementById("noMusic");
+const yesMusic=document.getElementById("yesMusic");
+
+bgMusic.volume=.25;
+noMusic.volume=.4;
+yesMusic.volume=.5;
+
+document.addEventListener("pointerdown",()=>{
+  bgMusic.play().catch(()=>{});
+},{once:true});
+
+/* CONFETTI */
+const confettiCanvas=document.getElementById("confettiCanvas");
+function resizeConfettiCanvas(){
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  confettiCanvas.width=Math.floor(window.innerWidth*dpr);
+  confettiCanvas.height=Math.floor(window.innerHeight*dpr);
+}
+resizeConfettiCanvas();
+window.addEventListener("resize",resizeConfettiCanvas);
+
+const confettiInstance=confetti.create(confettiCanvas,{resize:false});
+
+/* FLOATING HEARTS */
+function createHeart(){
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.style.left=Math.random()*100+"vw";
+  heart.style.width=10+Math.random()*20+"px";
+  heart.style.height=10+Math.random()*20+"px";
+  heart.style.animationDuration=5+Math.random()*10+"s";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),15000);
+}
+setInterval(createHeart,300);
+
+/* NO CLICK LOGIC */
+let step=0;
+let yesScale=1;
+let noScale=1;
+const prompts=[
+  "Are you sure?",
+  "Like… REALLY sure?",
+  "Think again 😌",
+  "This is getting suspicious 👀",
+  "Last chance… 💖"
+];
+
+noBtn.onclick=()=>{
+  noMusic.play().catch(()=>{});
+  step++;
+  question.textContent=prompts[Math.min(step-1,prompts.length-1)];
+  yesScale+=0.35;
+  noScale-=0.15;
+  yesBtn.style.transform=`translateY(-50%) scale(${yesScale})`;
+  noBtn.style.transform=`translateY(-50%) scale(${Math.max(noScale,0)})`;
+  if(noScale<=0.2){
+    noBtn.style.display="none";
+    question.textContent="There’s only one correct answer now 💖";
+  }
+};
+
+/* YES CLICK */
+yesBtn.onclick=()=>{
+  bgMusic.pause();
+  noMusic.pause();
+  yesMusic.play().catch(()=>{});
+
+  result.style.display="block";
+  resizeConfettiCanvas();
+
+  // Full-screen confetti animation
+  const end=Date.now()+2000;
+  (function frame(){
+    confettiInstance({
+      particleCount:12,
+      spread:100,
+      startVelocity:45,
+      origin:{x:Math.random(),y:Math.random()*0.4}
+    });
+    if(Date.now()<end) requestAnimationFrame(frame);
+  })();
+
+  // Big final burst
+  setTimeout(()=>{
+    confettiInstance({
+      particleCount:300,
+      spread:160,
+      startVelocity:60,
+      ticks:220,
+      origin:{x:0.5,y:0.55}
+    });
+  },400);
+};
+</script>
+</body>
+</html>
